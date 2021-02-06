@@ -142,3 +142,6 @@ Pipfile.lock
 
 # Stock price data
 /data
+
+# VSCode
+.vscode/
