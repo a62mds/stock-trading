@@ -89,7 +89,7 @@ class StockPriceDataset(object):
         return self.dataframe[key]
 
     @classmethod
-    def from_yahoo_finance(cls, symbol: str, start: date=date(1970, 1, 1), end: date=datetime.today().date(), interval: str="1d") -> StockPriceDataset:
+    def from_yahoo_finance(cls, symbol: str, start: Optional[date]=None, end: Optional[date]=None, interval: str="1d") -> StockPriceDataset:
         """
         Download stock data from Yahoo Finance for the given stock symbol over the specified period and at the
         specified interval and return as a StockPriceDataset.
@@ -98,11 +98,17 @@ class StockPriceDataset(object):
         """
         if interval not in VALID_INTERVALS:
             raise ValueError(f"Invalid interval: {interval}")
+        if start is None:
+            start = date(1970, 1, 1)
+        if end is None:
+            end = datetime.today().date()
         start += timedelta(**VALID_INTERVAL_TIMEDELTAS[interval])
         if start >= end:
             return StockPriceDataset(symbol)
         url: str = cls._make_yahoo_finance_url(symbol, start, end, interval)
         stock_price_data_str: str = requests.get(url).text
+        if stock_price_data_str.startswith("404 Not Found"):
+            raise ValueError(stock_price_data_str)
         stock_price_data: pd.DataFrame = pd.read_csv(StringIO(stock_price_data_str))
         return StockPriceDataset(symbol, dataframe=stock_price_data)
 
@@ -132,7 +138,7 @@ class StockPriceDataset(object):
         stock_price_data: pd.DataFrame = pd.read_csv(csv_path)
         return StockPriceDataset(symbol, dataframe=stock_price_data)
 
-    def to_csv(self, csv_path: Path, overwrite: bool=False) -> None:
+    def to_csv(self, csv_path: Path, overwrite: bool=False, mkdir: bool=True) -> None:
         """
         Basically a wrapper around the Pandas `DataFrame.to_csv` method.
         """
@@ -143,6 +149,8 @@ class StockPriceDataset(object):
             if not overwrite:
                 raise FileExistsError(f"CSV file already exists: '{csv_path}'")
             csv_path.unlink()
+        elif mkdir:
+            csv_path.parent.mkdir(exist_ok=True, parents=True)
         with csv_path.open(mode="w", newline="") as csv_file:
             self.dataframe.to_csv(csv_file, index=False)
 
