@@ -10,6 +10,7 @@ matplotlib = "*"
 pandas = "*"
 requests = "*"
 numpy = "==1.19.3"
+finplot = "*"
 
 [requires]
 python_version = "3.7"
