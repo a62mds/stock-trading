@@ -145,3 +145,6 @@ Pipfile.lock
 
 # VSCode
 .vscode/
+
+# Logs
+.logs/

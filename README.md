@@ -17,4 +17,6 @@ Some basic tools to help with stock trading.
 
 ## Usage
 
-TBD
+```shell
+pipenv run python analyze.py <SYMBOL> [--start|-s=<START-DATE>] [--end|-e=<END-DATE>] [--interval|-i=<INTERVAL>] [--update|-u]
+```
