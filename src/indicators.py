@@ -53,6 +53,8 @@ class MACD(Indicator):
         """
         Initialize a MACD object, specifying the field defining the timeseries data, the fast and slow EWMA spans, and
         the signal span.
+
+        For now at least, the unit of the spans is in days.
         """
         if slow_ewma_span <= fast_ewma_span:
             raise ValueError(
