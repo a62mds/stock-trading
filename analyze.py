@@ -25,7 +25,7 @@ def main(args: argparse.Namespace) -> int:
     """
     Read data from existing CSV file for ...
     """
-    logger.debug("In main. Arguments:")
+    logger.debug(f"{__file__} main function arguments:")
     for arg in vars(args):
         logger.debug(f"  {arg}: {getattr(args, arg)}")
     return_code: int = 0
@@ -51,9 +51,10 @@ def main(args: argparse.Namespace) -> int:
         plot_stock_price_data(stock_price_data, **kwargs)
     except Exception as e:
         logger.error(f"Encountered unhandled {e.__class__.__name__}: {e}")
-        logger.debug(traceback.format_exc())
+        for line in traceback.format_exc().rstrip().split("\n"):
+            logger.debug(line)
         return_code = -1
-    logger.debug(f"analyze.main returning {return_code}")
+    logger.debug(f"{__file__} main function returning {return_code}")
     return return_code
 
 
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     PARSER.add_argument("-u", "--update", action="store_true", help="Update existing stock price data first")
     ARGS = PARSER.parse_args()
 
-    LOGGER_SETTINGS = logger.LogSettings(console_level=logger.INFO, root_name="analyze")
+    LOGGER_SETTINGS = logger.LogSettings(console_level=logger.INFO, root_name=f"Analyze-{ARGS.symbol}")
     logger.setup(LOGGER_SETTINGS)
 
     RETURN_CODE = main(ARGS)
